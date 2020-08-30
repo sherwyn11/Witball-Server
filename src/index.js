@@ -10,8 +10,6 @@ require('dotenv').config();
 app.use(bodyParser.urlencoded({extended: true}));
 
 
-
-
 ///// routes /////
 
 app.get('/', (req, res) => {
