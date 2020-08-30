@@ -4,7 +4,6 @@ const socketio = require('socket.io');
 const bodyParser = require('body-parser');
 const handler = require('./utils/wit.handler');
 const client = require('./config/wit.config');
-const { getTeamIDs } = require('./utils/axios.handler');
 require('dotenv').config();
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -43,13 +42,6 @@ io.on('connection', (socket) => {
         console.log(query);
     });
 });
-
-// io.on('connection', (userSocket) => {
-//     console.log('connected')
-//     userSocket.on('send_message', (data) => {
-//         userSocket.broadcast.emit('receive_message', data)
-//     })
-// })
 
 const port = process.env.PORT || 8000;
 
