@@ -1,4 +1,5 @@
 const axios = require('axios');
+require('dotenv').config();
 
 function getTeamIDs() {
 
@@ -21,7 +22,7 @@ function getTeamIDs() {
 
 
 function getTeamFixtures(ids, teamName) {
-    
+
     return axios.get(`http://api.football-data.org/v2/teams/${ids[teamName]}/matches`, {
         headers: {
             'X-Auth-Token': process.env.FOOTBALL_API_TOKEN,
