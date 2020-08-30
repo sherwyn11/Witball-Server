@@ -1,5 +1,4 @@
-const axios = require('axios');
-const { getTeamIDs, getTeamFixtures } = require('./axios.handler');
+const { getTeamIDs, getTeamFixtures, getTeamScore } = require('./axios.handler');
 require('dotenv').config();
 
 function responseFromWit(data) {
@@ -26,7 +25,6 @@ async function handleGetFixtures(data) {
 
     var ids = await getTeamIDs();
     var teamNames = Object.keys(ids);
-
     var teamArr = data.entities['team_name:team_name'];
 
     teamArr.forEach((arr) => {
@@ -36,7 +34,25 @@ async function handleGetFixtures(data) {
     });
 
     var fixtures = await getTeamFixtures(ids, teamName);   
-    return fixtures; 
+
+    return {fixtures: fixtures}; 
+}
+
+async function handleGetScore(data) {
+
+    var ids = await getTeamIDs();
+    var teamNames = Object.keys(ids);
+    var teamArr = data.entities['team_name:team_name'];
+
+    teamArr.forEach((arr) => {
+        if(teamNames.includes(arr.value)) {
+            teamName = arr.value;
+        }
+    });
+
+    var score = await getTeamScore(teamName);
+    
+    return { score: score};
 }
   
 exports.responseFromWit = responseFromWit;

@@ -16,7 +16,7 @@ function getTeamIDs() {
         });
         return Promise.resolve(ids);
     }).catch(e => {
-        return Promise.reject(ids);(e);
+        return Promise.reject(e);
     });
 }
 
@@ -47,4 +47,42 @@ function getTeamFixtures(ids, teamName) {
     });
 }
 
-module.exports = { getTeamIDs, getTeamFixtures };
+
+function getTeamScore(teamName) {
+
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1;
+    var yyyy = today.getFullYear().toString();
+
+    if(dd < 10) { 
+        dd = '0' + dd; 
+    } 
+
+    if(mm < 10) { 
+        mm = '0' + mm; 
+    } 
+
+    var formattedDate = yyyy + '-' + mm + '-' + dd;
+
+    return axios.get(`http://api.football-data.org/v2/competitions/2021/matches?dateFrom=${formattedDate}&dateTo=${formattedDate}`, {
+        headers: {
+            'X-Auth-Token': process.env.FOOTBALL_API_TOKEN
+        }
+    }).then(data => {
+        var matches = data.data.matches;
+        var score = {};
+
+        for(const match of matches) {
+            if(match.homeTeam.name === teamName || match.awayTeam.name === teamName) {
+                score = match.score;
+                break;
+            }
+        }
+        return Promise.resolve(score);
+    }).catch(e => {
+        return Promise.reject(e);
+    });
+}
+
+module.exports = { getTeamIDs, getTeamFixtures, getTeamScore };

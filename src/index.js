@@ -22,7 +22,7 @@ app.post('/', (req, res) => {
     .message(query)
     .then(res => handler.responseFromWit(res))
     .then(msg => {
-        res.send({ 'fixtures': msg });
+        res.send(msg);
     })
     .catch(err => {
         console.error(
