@@ -85,4 +85,30 @@ function getTeamScore(teamName) {
     });
 }
 
-module.exports = { getTeamIDs, getTeamFixtures, getTeamScore };
+
+function getTeamPlayers(id) {
+
+    return axios.get(`http://api.football-data.org/v2/teams/${id}`, {
+        headers: {
+            'X-Auth-Token': process.env.FOOTBALL_API_TOKEN
+        }
+    }).then(data => {
+        var players = data.data.squad;
+        var resArr = [];
+
+        players.forEach((player) => {
+            let obj = {
+                'name': player.name,
+                'position': player.position === null ? "Manager" : player.position,
+                'nationality': player.nationality
+            }
+            resArr.push(obj);
+        })
+
+        return Promise.resolve(resArr);
+    }).catch(e => {
+        return Promise.reject(e);
+    });
+}
+
+module.exports = { getTeamIDs, getTeamFixtures, getTeamScore, getTeamPlayers };
