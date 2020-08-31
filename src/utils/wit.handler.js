@@ -4,14 +4,14 @@ require('dotenv').config();
 
 function responseFromWit(data, ids) {
 
-    const intent = data.intents.length > 0 && data.intents[0] || "__foo__";
+    const intent = data.intents.length > 0 && data.intents[0] || '__foo__';
     
     switch (intent.name) {
-        case "get_score":
+        case 'get_score':
             return handleGetScore(data, ids);
-        case "get_fixtures":
+        case 'get_fixtures':
             return handleGetFixtures(data, ids);
-        case "get_players":
+        case 'get_players':
             return handlerGetPlayers(data, ids);
     }
     

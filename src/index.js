@@ -10,7 +10,7 @@ require('dotenv').config();
 
 ///// Init /////
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 const redisClient = redis.createClient();
 var ids;
 
@@ -24,7 +24,7 @@ function cache(req, res, next) {
             ids = JSON.parse(data);
         }else{
             ids = await getTeamIDs();
-            redisClient.setex('ids', 3600, JSON.stringify(ids));
+            redisClient.setex('ids', 86400, JSON.stringify(ids));
         }
         next();
     });
