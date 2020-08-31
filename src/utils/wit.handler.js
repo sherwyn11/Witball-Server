@@ -25,7 +25,6 @@ function handleGibberish() {
 }
 
 
-  
 async function handleGetFixtures(data, ids) {
 
     let teamName = getTeamName(data, ids);

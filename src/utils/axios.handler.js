@@ -83,7 +83,6 @@ function getTeamScore(teamName) {
     });
 }
 
-
 function getTeamPlayers(id) {
 
     return axios.get(`http://api.football-data.org/v2/teams/${id}`, {
