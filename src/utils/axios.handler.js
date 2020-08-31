@@ -20,7 +20,6 @@ function getTeamIDs() {
     });
 }
 
-
 function getTeamFixtures(ids, teamName) {
 
     return axios.get(`http://api.football-data.org/v2/teams/${ids[teamName]}/matches`, {
@@ -46,7 +45,6 @@ function getTeamFixtures(ids, teamName) {
         return Promise.reject(e);
     });
 }
-
 
 function getTeamScore(teamName) {
 

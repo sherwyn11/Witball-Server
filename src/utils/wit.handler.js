@@ -1,17 +1,18 @@
-const { getTeamIDs, getTeamFixtures, getTeamScore, getTeamPlayers } = require('./axios.handler');
+const { getTeamFixtures, getTeamScore, getTeamPlayers } = require('./axios.handler');
+const { getTeamName, getTeamID } = require('../helpers/data.helper');
 require('dotenv').config();
 
-function responseFromWit(data) {
+function responseFromWit(data, ids) {
 
     const intent = data.intents.length > 0 && data.intents[0] || "__foo__";
     
     switch (intent.name) {
         case "get_score":
-            return handleGetScore(data);
+            return handleGetScore(data, ids);
         case "get_fixtures":
-            return handleGetFixtures(data);
+            return handleGetFixtures(data, ids);
         case "get_players":
-            return handlerGetPlayers(data);
+            return handlerGetPlayers(data, ids);
     }
     
     return handleGibberish();
@@ -22,53 +23,28 @@ function handleGibberish() {
         "Ask me something like 'What is the current score of Manchester City?' or 'Fixtures of Arsenal?'"
     );
 }
+
+
   
-async function handleGetFixtures(data) {
+async function handleGetFixtures(data, ids) {
 
-    var ids = await getTeamIDs();
-    var teamNames = Object.keys(ids);
-    var teamArr = data.entities['team_name:team_name'];
-    var teamName;
-
-    teamArr.forEach((arr) => {
-        if(teamNames.includes(arr.value)) {
-            teamName = arr.value;
-        }
-    });
+    let teamName = getTeamName(data, ids);
     var fixtures = await getTeamFixtures(ids, teamName);   
 
     return { fixtures: fixtures }; 
 }
 
-async function handleGetScore(data) {
+async function handleGetScore(data, ids) {
 
-    var ids = await getTeamIDs();
-    var teamNames = Object.keys(ids);
-    var teamArr = data.entities['team_name:team_name'];
-    var teamName;
-
-    teamArr.forEach((arr) => {
-        if(teamNames.includes(arr.value)) {
-            teamName = arr.value;
-        }
-    });
+    let teamName = getTeamName(data, ids);
     var score = await getTeamScore(teamName);
 
     return { score: score };
 }
   
-async function handlerGetPlayers(data) {
+async function handlerGetPlayers(data, ids) {
 
-    var ids = await getTeamIDs();
-    var teamNames = Object.keys(ids);
-    var teamArr = data.entities['team_name:team_name'];
-    var teamID;
-
-    teamArr.forEach((arr) => {
-        if(teamNames.includes(arr.value)) {
-            teamID = ids[arr.value];
-        }
-    });
+    let teamID = getTeamID(data, ids);
     var players = await getTeamPlayers(teamID);
 
     return { players: players };
