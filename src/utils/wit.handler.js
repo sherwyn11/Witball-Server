@@ -29,7 +29,7 @@ async function responseFromWit(data) {
             case 'get_fixtures':
                 return handleGetFixtures(data, ids);
             case 'get_players':
-                return handlerGetPlayers(data, ids);
+                return handleGetPlayers(data, ids);
         }
 
         return handleGibberish();
@@ -38,7 +38,7 @@ async function responseFromWit(data) {
   
 function handleGibberish() {
     return {
-        intent: 'random',
+        intent: 'gibberish',
         text: "Sorry! I didn't get that! Ask me something like 'What is the current score of Manchester City?' or 'Fixtures of Arsenal?' or 'Players of Chelsea FC?'",
         type: 'string'
     };
@@ -48,26 +48,54 @@ function handleGibberish() {
 async function handleGetFixtures(data, ids) {
 
     let teamName = getTeamName(data, ids);
-    var fixtures = await getTeamFixtures(ids, teamName);   
+    var err = false;
+    var errMsg = "";
+    var fixtures = {};
 
-    return { fixtures: fixtures, intent: 'get_fixtures', teamName: teamName, type: 'object' }; 
+    if(teamName === undefined) {
+        err = true;
+        errMsg = "Sorry! I could not resolve the team name!";
+    } else{
+        fixtures = await getTeamFixtures(ids, teamName);   
+    }
+
+    return { fixtures: fixtures, intent: 'get_fixtures', teamName: teamName, type: 'object', err: err, errMsg: errMsg }; 
 }
 
 async function handleGetScore(data, ids) {
 
     let teamName = getTeamName(data, ids);
-    var score = await getTeamScore(teamName);
+    var score = {};
+    var err = false;
+    var errMsg = "";
 
-    return { score: score, intent: 'get_score', teamName: teamName, type: 'object' };
+    if(teamName === undefined) {
+        err = true;
+        errMsg = "Sorry! I could not resolve the team name!";
+    } else{
+        score = await getTeamScore(teamName);
+    }
+
+    return { score: score, intent: 'get_score', teamName: teamName, type: 'object', err: err, errMsg: errMsg };
 }
   
-async function handlerGetPlayers(data, ids) {
+async function handleGetPlayers(data, ids) {
 
     let teamID = getTeamID(data, ids);
-    let teamName = getTeamNameFromID(teamID, ids);
-    var players = await getTeamPlayers(teamID);
+    var players = {};
+    var err = false;
+    var errMsg = "";
 
-    return { players: players, intent: 'get_players', teamName: teamName, type: 'object' };
+    if(teamID === undefined) {
+        err = true;
+        errMsg = "Sorry! I could not resolve the team name!";
+    }else{
+        var teamName = getTeamNameFromID(teamID, ids);
+        players = await getTeamPlayers(teamID);
+    }
+
+
+    return { players: players, intent: 'get_players', teamName: teamName, type: 'object', err: err, errMsg: errMsg };
 }
 
 exports.responseFromWit = responseFromWit;  
