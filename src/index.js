@@ -51,16 +51,15 @@ app.post('/', cache, (req, res) => {
 
 const io = socketio(server);
 
-io.on('connection', cache, (socket) => {
+io.on('connection', (socket) => {
     console.log('Connected!');
 
     socket.on('send_query', async(query) => {
-        console.log(query.message);
+        console.log(query);
         client
-            .message(query.message)
-            .then(res => handler.responseFromWit(res, ids))
+            .message(query)
+            .then(res => handler.responseFromWit(res))
             .then(msg => {
-                console.log(msg);
                 socket.broadcast.emit('receive_message', msg);
             })
             .catch(err => {
