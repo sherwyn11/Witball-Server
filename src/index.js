@@ -14,11 +14,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // const redisClient = redis.createClient();
 var ids = undefined;
 
-///// Checking Redis-Cache //////
+///// Store team ID's on Server //////
 
 async function cache(req, res, next) {
     if (ids === undefined) {
-        console.log('Getting ids');
         ids = await getTeamIDs();
     }
     next();
@@ -60,8 +59,7 @@ io.on('connection', (socket) => {
             .message(query.message)
             .then(res => handler.responseFromWit(res))
             .then(msg => {
-                console.log(msg);
-                socket.emit('receive_message', msg);
+                socket.broadcast.emit('receive_message', msg);
             })
             .catch(err => {
                 console.error(

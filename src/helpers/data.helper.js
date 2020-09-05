@@ -26,4 +26,34 @@ function getTeamID(data, ids) {
     return teamID;
 }
 
-module.exports = { getTeamName, getTeamID };
+function getTeamNameFromID(id, ids) {
+    var teamNames = Object.keys(ids);
+    var teamName;
+
+    for(const team of teamNames) {
+        if(ids[team] === id){
+            teamName = team
+            break;
+        }
+    }
+
+    return teamName;
+}
+
+function getTrait(traits) {
+    var traitNames = Object.keys(traits);
+    var max = 0;
+    var fin;
+
+    for(const trait of traitNames) {
+        if(traits[trait][0].confidence >= max) {
+            max = traits[trait][0].confidence;
+            traits[trait][0]['name'] = trait;
+            fin = traits[trait];
+        }
+    }
+
+    return fin[0];
+}
+
+module.exports = { getTeamName, getTeamID, getTeamNameFromID, getTrait };
