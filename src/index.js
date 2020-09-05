@@ -12,24 +12,16 @@ require('dotenv').config();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 // const redisClient = redis.createClient();
-var ids;
+var ids = undefined;
 
 ///// Checking Redis-Cache //////
 
 async function cache(req, res, next) {
-    ids = await getTeamIDs();
+    if (ids === undefined) {
+        console.log('Getting ids');
+        ids = await getTeamIDs();
+    }
     next();
-
-    // redisClient.get('ids', async(err, data) => {
-    //     if (err) throw err;
-
-    //     if (data != null) {
-    //         ids = JSON.parse(data);
-    //     } else {
-    //         redisClient.setex('ids', 86400, JSON.stringify(ids));
-    //     }
-
-    // });
 }
 
 ///// routes /////
@@ -61,8 +53,22 @@ const io = socketio(server);
 
 io.on('connection', (socket) => {
     console.log('Connected!');
-    socket.on('send_query', (query) => {
+
+    socket.on('send_query', async(query) => {
         console.log(query);
+        client
+            .message(query)
+            .then(res => handler.responseFromWit(res, ids))
+            .then(msg => {
+                socket.broadcast.emit('receive_message', msg);
+            })
+            .catch(err => {
+                console.error(
+                    'Oops! Got an error from Wit: ',
+                    err.stack || err
+                );
+                socket.broadcast.emit('receive_message', err);
+            });
     });
 });
 
