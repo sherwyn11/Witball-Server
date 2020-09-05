@@ -61,7 +61,7 @@ io.on('connection', (socket) => {
             .then(res => handler.responseFromWit(res))
             .then(msg => {
                 console.log(msg);
-                socket.broadcast.emit('receive_message', msg);
+                socket.emit('receive_message', msg);
             })
             .catch(err => {
                 console.error(
