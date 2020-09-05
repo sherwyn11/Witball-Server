@@ -1,5 +1,5 @@
 const { getTeamFixtures, getTeamScore, getTeamPlayers } = require('./axios.handler');
-const { getTeamName, getTeamID } = require('../helpers/data.helper');
+const { getTeamName, getTeamID, getTeamNameFromID } = require('../helpers/data.helper');
 const { getTeamIDs } = require('./axios.handler');
 require('dotenv').config();
 
@@ -32,7 +32,7 @@ async function handleGetFixtures(data, ids) {
     let teamName = getTeamName(data, ids);
     var fixtures = await getTeamFixtures(ids, teamName);   
 
-    return { fixtures: fixtures }; 
+    return { fixtures: fixtures, intent: 'get_fixtures', teamName: teamName }; 
 }
 
 async function handleGetScore(data, ids) {
@@ -40,15 +40,16 @@ async function handleGetScore(data, ids) {
     let teamName = getTeamName(data, ids);
     var score = await getTeamScore(teamName);
 
-    return { score: score };
+    return { score: score, intent: 'get_score', teamName: teamName };
 }
   
 async function handlerGetPlayers(data, ids) {
 
     let teamID = getTeamID(data, ids);
+    let teamName = getTeamNameFromID(teamID, ids);
     var players = await getTeamPlayers(teamID);
 
-    return { players: players };
+    return { players: players, intent: 'get_score', teamName: teamName };
 }
 
 

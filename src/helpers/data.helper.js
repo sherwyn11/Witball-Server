@@ -26,4 +26,18 @@ function getTeamID(data, ids) {
     return teamID;
 }
 
-module.exports = { getTeamName, getTeamID };
+function getTeamNameFromID(id, ids) {
+    var teamNames = Object.keys(ids);
+    var teamName;
+
+    for(const team of teamNames) {
+        if(ids[team] === id){
+            teamName = team
+            break;
+        }
+    }
+
+    return teamName;
+}
+
+module.exports = { getTeamName, getTeamID, getTeamNameFromID };

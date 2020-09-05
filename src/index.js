@@ -14,11 +14,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // const redisClient = redis.createClient();
 var ids = undefined;
 
-///// Checking Redis-Cache //////
+///// Store team ID's on Server //////
 
 async function cache(req, res, next) {
     if(ids === undefined) {
-        console.log('Getting ids');
         ids = await getTeamIDs();
     }
     next();
