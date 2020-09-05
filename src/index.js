@@ -17,12 +17,12 @@ var ids;
 ///// Checking Redis-Cache //////
 
 function cache(req, res, next) {
-    redisClient.get('ids', async (err, data) => {
-        if(err) throw err;
+    redisClient.get('ids', async(err, data) => {
+        if (err) throw err;
 
-        if(data != null) {
+        if (data != null) {
             ids = JSON.parse(data);
-        }else{
+        } else {
             ids = await getTeamIDs();
             redisClient.setex('ids', 86400, JSON.stringify(ids));
         }
@@ -40,17 +40,17 @@ app.post('/', cache, (req, res) => {
     const query = req.body.query;
 
     client
-    .message(query)
-    .then(res => handler.responseFromWit(res, ids))
-    .then(msg => {
-        res.send(msg);
-    })
-    .catch(err => {
-        console.error(
-            'Oops! Got an error from Wit: ',
-            err.stack || err
-        );
-    });
+        .message(query)
+        .then(res => handler.responseFromWit(res, ids))
+        .then(msg => {
+            res.send(msg);
+        })
+        .catch(err => {
+            console.error(
+                'Oops! Got an error from Wit: ',
+                err.stack || err
+            );
+        });
 });
 
 //// sockets to be implemented ////
