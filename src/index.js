@@ -55,9 +55,9 @@ io.on('connection', (socket) => {
     console.log('Connected!');
 
     socket.on('send_query', async(query) => {
-        console.log(query);
+        console.log(query.message);
         client
-            .message(query)
+            .message(query.message)
             .then(res => handler.responseFromWit(res))
             .then(msg => {
                 console.log(msg);
