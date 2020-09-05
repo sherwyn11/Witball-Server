@@ -12,7 +12,7 @@ require('dotenv').config();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 // const redisClient = redis.createClient();
-var data;
+var data = undefined;
 var ids = undefined;
 var crestUrls = undefined;
 
