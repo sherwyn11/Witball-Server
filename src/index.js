@@ -36,6 +36,7 @@ app.post('/', cache, (req, res) => {
         .message(query)
         .then(res => handler.responseFromWit(res, ids))
         .then(msg => {
+
             res.send(msg);
         })
         .catch(err => {
