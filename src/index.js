@@ -2,7 +2,7 @@ const app = require('express')();
 const server = require('http').createServer(app);
 const socketio = require('socket.io');
 const bodyParser = require('body-parser');
-const redis = require('redis');
+// const redis = require('redis');
 const handler = require('./utils/wit.handler');
 const client = require('./config/wit.config');
 const { getTeamIDs } = require('./utils/axios.handler');
@@ -11,23 +11,17 @@ require('dotenv').config();
 ///// Init /////
 
 app.use(bodyParser.urlencoded({ extended: true }));
-const redisClient = redis.createClient();
-var ids;
+// const redisClient = redis.createClient();
+var ids = undefined;
 
 ///// Checking Redis-Cache //////
 
-function cache(req, res, next) {
-    redisClient.get('ids', async (err, data) => {
-        if(err) throw err;
-
-        if(data != null) {
-            ids = JSON.parse(data);
-        }else{
-            ids = await getTeamIDs();
-            redisClient.setex('ids', 86400, JSON.stringify(ids));
-        }
-        next();
-    });
+async function cache(req, res, next) {
+    if(ids === undefined) {
+        console.log('Getting ids');
+        ids = await getTeamIDs();
+    }
+    next();
 }
 
 ///// routes /////
@@ -59,8 +53,22 @@ const io = socketio(server);
 
 io.on('connection', (socket) => {
     console.log('Connected!');
-    socket.on('send_query', (query) => {
+
+    socket.on('send_query', async (query) => {
         console.log(query);
+        client
+        .message(query)
+        .then(res => handler.responseFromWit(res, ids))
+        .then(msg => {
+            socket.broadcast.emit('receive_message', msg);
+        })
+        .catch(err => {
+            console.error(
+                'Oops! Got an error from Wit: ',
+                err.stack || err
+            );
+            socket.broadcast.emit('receive_message', err);
+        });
     });
 });
 
