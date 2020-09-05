@@ -9,10 +9,10 @@ async function responseFromWit(data) {
     var ids = await getTeamIDs();
 
 
-    if (intent === '__foo__') {
+    if(intent === '__foo__') {
         let trait = Object.keys(data.traits).length === 0 ? '__foo__' : getTrait(data.traits);
 
-        switch (trait.name) {
+        switch(trait.name) {
             case 'wit$thanks':
                 return { intent: 'thanks', 'message': 'Anytime!', type: 'string' };
             case 'wit$greetings':
@@ -22,7 +22,7 @@ async function responseFromWit(data) {
         }
 
         return handleGibberish();
-    } else {
+    }else{
         switch (intent.name) {
             case 'get_score':
                 return handleGetScore(data, ids);
@@ -35,7 +35,7 @@ async function responseFromWit(data) {
         return handleGibberish();
     }
 }
-
+  
 function handleGibberish() {
     return {
         intent: 'gibberish',
@@ -52,14 +52,14 @@ async function handleGetFixtures(data, ids) {
     var errMsg = "";
     var fixtures = {};
 
-    if (teamName === undefined) {
+    if(teamName === undefined) {
         err = true;
         errMsg = "Sorry! I could not resolve the team name!";
-    } else {
-        fixtures = await getTeamFixtures(ids, teamName);
+    } else{
+        fixtures = await getTeamFixtures(ids, teamName);   
     }
 
-    return { fixtures: fixtures, intent: 'get_fixtures', teamName: teamName, type: 'object', err: err, errMsg: errMsg };
+    return { fixtures: fixtures, intent: 'get_fixtures', teamName: teamName, type: 'object', err: err, errMsg: errMsg }; 
 }
 
 async function handleGetScore(data, ids) {
@@ -69,16 +69,16 @@ async function handleGetScore(data, ids) {
     var err = false;
     var errMsg = "";
 
-    if (teamName === undefined) {
+    if(teamName === undefined) {
         err = true;
         errMsg = "Sorry! I could not resolve the team name!";
-    } else {
+    } else{
         score = await getTeamScore(teamName);
     }
 
     return { score: score, intent: 'get_score', teamName: teamName, type: 'object', err: err, errMsg: errMsg };
 }
-
+  
 async function handleGetPlayers(data, ids) {
 
     let teamID = getTeamID(data, ids);
@@ -86,10 +86,10 @@ async function handleGetPlayers(data, ids) {
     var err = false;
     var errMsg = "";
 
-    if (teamID === undefined) {
+    if(teamID === undefined) {
         err = true;
         errMsg = "Sorry! I could not resolve the team name!";
-    } else {
+    }else{
         var teamName = getTeamNameFromID(teamID, ids);
         players = await getTeamPlayers(teamID);
     }
@@ -98,4 +98,4 @@ async function handleGetPlayers(data, ids) {
     return { players: players, intent: 'get_players', teamName: teamName, type: 'object', err: err, errMsg: errMsg };
 }
 
-exports.responseFromWit = responseFromWit;
+exports.responseFromWit = responseFromWit;  

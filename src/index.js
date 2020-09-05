@@ -17,7 +17,7 @@ var ids = undefined;
 ///// Store team ID's on Server //////
 
 async function cache(req, res, next) {
-    if (ids === undefined) {
+    if(ids === undefined) {
         ids = await getTeamIDs();
     }
     next();
@@ -33,18 +33,17 @@ app.post('/', cache, (req, res) => {
     const query = req.body.query;
 
     client
-        .message(query)
-        .then(res => handler.responseFromWit(res, ids))
-        .then(msg => {
-
-            res.send(msg);
-        })
-        .catch(err => {
-            console.error(
-                'Oops! Got an error from Wit: ',
-                err.stack || err
-            );
-        });
+    .message(query)
+    .then(res => handler.responseFromWit(res, ids))
+    .then(msg => {
+        res.send(msg);
+    })
+    .catch(err => {
+        console.error(
+            'Oops! Got an error from Wit: ',
+            err.stack || err
+        );
+    });
 });
 
 //// sockets to be implemented ////
@@ -54,21 +53,21 @@ const io = socketio(server);
 io.on('connection', (socket) => {
     console.log('Connected!');
 
-    socket.on('send_query', async(query) => {
+    socket.on('send_query', async (query) => {
         console.log(query.message);
         client
-            .message(query.message)
-            .then(res => handler.responseFromWit(res))
-            .then(msg => {
-                socket.broadcast.emit('receive_message', msg);
-            })
-            .catch(err => {
-                console.error(
-                    'Oops! Got an error from Wit: ',
-                    err.stack || err
-                );
-                socket.broadcast.emit('receive_message', err);
-            });
+        .message(query.message)
+        .then(res => handler.responseFromWit(res))
+        .then(msg => {
+            socket.broadcast.emit('receive_message', msg);
+        })
+        .catch(err => {
+            console.error(
+                'Oops! Got an error from Wit: ',
+                err.stack || err
+            );
+            socket.broadcast.emit('receive_message', err);
+        });
     });
 });
 
