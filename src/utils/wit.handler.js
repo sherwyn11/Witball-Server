@@ -1,80 +1,55 @@
-const app = require('express')();
-const server = require('http').createServer(app);
-const socketio = require('socket.io');
-const bodyParser = require('body-parser');
-// const redis = require('redis');
-const handler = require('./utils/wit.handler');
-const client = require('./config/wit.config');
-const { getTeamIDs } = require('./utils/axios.handler');
+const { getTeamFixtures, getTeamScore, getTeamPlayers } = require('./axios.handler');
+const { getTeamName, getTeamID } = require('../helpers/data.helper');
+const { getTeamIDs } = require('./axios.handler');
 require('dotenv').config();
 
-///// Init /////
+async function responseFromWit(data) {
 
-app.use(bodyParser.urlencoded({ extended: true }));
-// const redisClient = redis.createClient();
-var ids = undefined;
+    const intent = data.intents.length > 0 && data.intents[0] || '__foo__';
+    var ids = await getTeamIDs();
 
-///// Checking Redis-Cache //////
-
-async function cache(req, res, next) {
-    if (ids === undefined) {
-        console.log('Getting ids');
-        ids = await getTeamIDs();
+    switch (intent.name) {
+        case 'get_score':
+            return handleGetScore(data, ids);
+        case 'get_fixtures':
+            return handleGetFixtures(data, ids);
+        case 'get_players':
+            return handlerGetPlayers(data, ids);
     }
-    next();
+
+    return handleGibberish();
 }
 
-///// routes /////
+function handleGibberish() {
+    return Promise.resolve(
+        "Ask me something like 'What is the current score of Manchester City?' or 'Fixtures of Arsenal?'"
+    );
+}
 
-app.get('/', (req, res) => {
-    res.send('Test Works!');
-});
 
-app.post('/', cache, (req, res) => {
-    const query = req.body.query;
+async function handleGetFixtures(data, ids) {
 
-    client
-        .message(query)
-        .then(res => handler.responseFromWit(res, ids))
-        .then(msg => {
-            res.send(msg);
-        })
-        .catch(err => {
-            console.error(
-                'Oops! Got an error from Wit: ',
-                err.stack || err
-            );
-        });
-});
+    let teamName = getTeamName(data, ids);
+    var fixtures = await getTeamFixtures(ids, teamName);
 
-//// sockets to be implemented ////
+    return { fixtures: fixtures };
+}
 
-const io = socketio(server);
+async function handleGetScore(data, ids) {
 
-io.on('connection', cache, (socket) => {
-    console.log('Connected!');
+    let teamName = getTeamName(data, ids);
+    var score = await getTeamScore(teamName);
 
-    socket.on('send_query', async(query) => {
-        console.log(query.message);
-        client
-            .message(query.message)
-            .then(res => handler.responseFromWit(res, ids))
-            .then(msg => {
-                console.log(msg);
-                socket.broadcast.emit('receive_message', msg);
-            })
-            .catch(err => {
-                console.error(
-                    'Oops! Got an error from Wit: ',
-                    err.stack || err
-                );
-                socket.broadcast.emit('receive_message', err);
-            });
-    });
-});
+    return { score: score };
+}
 
-const port = process.env.PORT || 8000;
+async function handlerGetPlayers(data, ids) {
 
-server.listen(port, () => {
-    console.log('Server is up on port ' + port);
-});
+    let teamID = getTeamID(data, ids);
+    var players = await getTeamPlayers(teamID);
+
+    return { players: players };
+}
+
+
+exports.responseFromWit = responseFromWit;
