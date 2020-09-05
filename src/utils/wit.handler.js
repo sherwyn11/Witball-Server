@@ -1,12 +1,10 @@
 const { getTeamFixtures, getTeamScore, getTeamPlayers } = require('./axios.handler');
 const { getTeamName, getTeamID, getTeamNameFromID, getTrait } = require('../helpers/data.helper');
-const { getTeamIDs } = require('./axios.handler');
 require('dotenv').config();
 
-async function responseFromWit(data) {
+async function responseFromWit(data, ids, crestUrls) {
 
     const intent = data.intents.length > 0 && data.intents[0] || '__foo__';
-    var ids = await getTeamIDs();
 
 
     if(intent === '__foo__') {
@@ -25,11 +23,11 @@ async function responseFromWit(data) {
     }else{
         switch (intent.name) {
             case 'get_score':
-                return handleGetScore(data, ids);
+                return handleGetScore(data, ids, crestUrls);
             case 'get_fixtures':
-                return handleGetFixtures(data, ids);
+                return handleGetFixtures(data, ids, crestUrls);
             case 'get_players':
-                return handleGetPlayers(data, ids);
+                return handleGetPlayers(data, ids, crestUrls);
         }
 
         return handleGibberish();
@@ -39,63 +37,54 @@ async function responseFromWit(data) {
 function handleGibberish() {
     return {
         intent: 'gibberish',
-        text: "Sorry! I didn't get that! Ask me something like 'What is the current score of Manchester City?' or 'Fixtures of Arsenal?' or 'Players of Chelsea FC?'",
+        message: "Sorry! I didn't get that! Ask me something like 'What is the current score of Manchester City?' or 'Fixtures of Arsenal?' or 'Players of Chelsea FC?'",
         type: 'string'
     };
 }
 
 
-async function handleGetFixtures(data, ids) {
+async function handleGetFixtures(data, ids, crestUrls) {
 
     let teamName = getTeamName(data, ids);
-    var err = false;
-    var errMsg = "";
     var fixtures = {};
 
     if(teamName === undefined) {
-        err = true;
-        errMsg = "Sorry! I could not resolve the team name!";
+        return { type: 'string', message: 'Sorry! I couldn\'t resolve the team name', intent: 'error' }; 
     } else{
-        fixtures = await getTeamFixtures(ids, teamName);   
+        fixtures = await getTeamFixtures(ids, teamName, crestUrls);   
     }
 
-    return { fixtures: fixtures, intent: 'get_fixtures', teamName: teamName, type: 'object', err: err, errMsg: errMsg }; 
+    return { object: fixtures, intent: 'get_fixtures', teamName: teamName, type: 'object' }; 
 }
 
-async function handleGetScore(data, ids) {
+async function handleGetScore(data, ids, crestUrls) {
 
     let teamName = getTeamName(data, ids);
     var score = {};
-    var err = false;
-    var errMsg = "";
 
     if(teamName === undefined) {
-        err = true;
-        errMsg = "Sorry! I could not resolve the team name!";
+        return { type: 'string', message: 'Sorry! I couldn\'t resolve the team name', intent: 'error' }; 
     } else{
         score = await getTeamScore(teamName);
     }
 
-    return { score: score, intent: 'get_score', teamName: teamName, type: 'object', err: err, errMsg: errMsg };
+    return { object: score, intent: 'get_score', teamName: teamName, type: 'object' };
 }
   
-async function handleGetPlayers(data, ids) {
+async function handleGetPlayers(data, ids, crestUrls) {
 
     let teamID = getTeamID(data, ids);
     var players = {};
-    var err = false;
-    var errMsg = "";
 
     if(teamID === undefined) {
-        err = true;
-        errMsg = "Sorry! I could not resolve the team name!";
+        return { type: 'string', message: 'Sorry! I couldn\'t resolve the team name', intent: 'error' }; 
     }else{
         var teamName = getTeamNameFromID(teamID, ids);
         players = await getTeamPlayers(teamID);
     }
 
 
-    return { players: players, intent: 'get_players', teamName: teamName, type: 'object', err: err, errMsg: errMsg };
+    return { object: players, intent: 'get_players', teamName: teamName, type: 'object', crestUrl: crestUrls[teamName] };
 }
 
 exports.responseFromWit = responseFromWit;  

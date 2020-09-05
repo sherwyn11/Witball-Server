@@ -1,7 +1,7 @@
 const axios = require('axios');
 require('dotenv').config();
 
-function getTeamIDs() {
+function getTeamIDsAndCrestUrls() {
 
     return axios.get('http://api.football-data.org/v2/competitions/2021/teams', { 
         headers: {
@@ -10,17 +10,19 @@ function getTeamIDs() {
     }).then(data => {
         var teams = data.data.teams;
         var ids = {};
+        var crest_urls = {};
 
         teams.forEach(team => {
             ids[team.name] = team.id;
+            crest_urls[team.name] = team.crestUrl;
         });
-        return Promise.resolve(ids);
+        return Promise.resolve({ids: ids, crestUrls: crest_urls});
     }).catch(e => {
         return Promise.reject(e);
     });
 }
 
-function getTeamFixtures(ids, teamName) {
+function getTeamFixtures(ids, teamName, crestUrls) {
 
     return axios.get(`http://api.football-data.org/v2/teams/${ids[teamName]}/matches`, {
         headers: {
@@ -35,8 +37,11 @@ function getTeamFixtures(ids, teamName) {
         filtered.forEach((match) => {
             var obj = {
                 'homeTeam': match.homeTeam.name,
+                'homeTeamCrest': crestUrls[match.homeTeam.name],
                 'awayTeam': match.awayTeam.name,
-                'datetimeOfMatch': match.utcDate
+                'awayTeamCrest': crestUrls[match.awayTeam.name],
+                'datetimeOfMatch': match.utcDate,
+                'matchday': match.matchday,
             };
             resArr.push(obj);
         });
@@ -108,4 +113,4 @@ function getTeamPlayers(id) {
     });
 }
 
-module.exports = { getTeamIDs, getTeamFixtures, getTeamScore, getTeamPlayers };
+module.exports = { getTeamIDsAndCrestUrls, getTeamFixtures, getTeamScore, getTeamPlayers };

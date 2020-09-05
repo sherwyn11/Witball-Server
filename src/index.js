@@ -5,20 +5,24 @@ const bodyParser = require('body-parser');
 // const redis = require('redis');
 const handler = require('./utils/wit.handler');
 const client = require('./config/wit.config');
-const { getTeamIDs } = require('./utils/axios.handler');
+const { getTeamIDsAndCrestUrls } = require('./utils/axios.handler');
 require('dotenv').config();
 
 ///// Init /////
 
 app.use(bodyParser.urlencoded({ extended: true }));
 // const redisClient = redis.createClient();
+var data;
 var ids = undefined;
+var crestUrls = undefined;
 
 ///// Store team ID's on Server //////
 
 async function cache(req, res, next) {
-    if(ids === undefined) {
-        ids = await getTeamIDs();
+    if(data === undefined) {
+        data = await getTeamIDsAndCrestUrls();
+        ids = data.ids;
+        crestUrls = data.crestUrls;
     }
     next();
 }
@@ -34,7 +38,7 @@ app.post('/', cache, (req, res) => {
 
     client
     .message(query)
-    .then(res => handler.responseFromWit(res, ids))
+    .then(res => handler.responseFromWit(res, ids, crestUrls))
     .then(msg => {
         res.send(msg);
     })
