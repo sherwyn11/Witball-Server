@@ -40,4 +40,20 @@ function getTeamNameFromID(id, ids) {
     return teamName;
 }
 
-module.exports = { getTeamName, getTeamID, getTeamNameFromID };
+function getTrait(traits) {
+    var traitNames = Object.keys(traits);
+    var max = 0;
+    var fin;
+
+    for(const trait of traitNames) {
+        if(traits[trait][0].confidence >= max) {
+            max = traits[trait][0].confidence;
+            traits[trait][0]['name'] = trait;
+            fin = traits[trait];
+        }
+    }
+
+    return fin[0];
+}
+
+module.exports = { getTeamName, getTeamID, getTeamNameFromID, getTrait };
