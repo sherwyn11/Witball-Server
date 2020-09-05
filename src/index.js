@@ -51,7 +51,7 @@ app.post('/', cache, (req, res) => {
 
 const io = socketio(server);
 
-io.on('connection', (socket) => {
+io.on('connection', cache, (socket) => {
     console.log('Connected!');
 
     socket.on('send_query', async(query) => {
