@@ -1,11 +1,13 @@
 const { getTeamFixtures, getTeamScore, getTeamPlayers } = require('./axios.handler');
 const { getTeamName, getTeamID } = require('../helpers/data.helper');
+const { getTeamIDs } = require('./axios.handler');
 require('dotenv').config();
 
-function responseFromWit(data, ids) {
+async function responseFromWit(data) {
 
     const intent = data.intents.length > 0 && data.intents[0] || '__foo__';
-    
+    var ids = await getTeamIDs();
+
     switch (intent.name) {
         case 'get_score':
             return handleGetScore(data, ids);
