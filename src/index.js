@@ -60,6 +60,7 @@ io.on('connection', (socket) => {
             .message(query)
             .then(res => handler.responseFromWit(res, ids))
             .then(msg => {
+                console.log(msg);
                 socket.broadcast.emit('receive_message', msg);
             })
             .catch(err => {
