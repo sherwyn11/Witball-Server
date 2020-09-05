@@ -19,7 +19,7 @@ var crestUrls = undefined;
 ///// Store team ID's on Server //////
 
 async function cache(req, res, next) {
-    if(data === undefined) {
+    if (data === undefined) {
         data = await getTeamIDsAndCrestUrls();
         ids = data.ids;
         crestUrls = data.crestUrls;
@@ -37,41 +37,44 @@ app.post('/', cache, (req, res) => {
     const query = req.body.query;
 
     client
-    .message(query)
-    .then(res => handler.responseFromWit(res, ids, crestUrls))
-    .then(msg => {
-        res.send(msg);
-    })
-    .catch(err => {
-        console.error(
-            'Oops! Got an error from Wit: ',
-            err.stack || err
-        );
-    });
-});
-
-//// sockets to be implemented ////
-
-const io = socketio(server);
-
-io.on('connection', (socket) => {
-    console.log('Connected!');
-
-    socket.on('send_query', async (query) => {
-        console.log(query.message);
-        client
-        .message(query.message)
-        .then(res => handler.responseFromWit(res))
+        .message(query)
+        .then(res => handler.responseFromWit(res, ids, crestUrls))
         .then(msg => {
-            socket.broadcast.emit('receive_message', msg);
+            res.send(msg);
         })
         .catch(err => {
             console.error(
                 'Oops! Got an error from Wit: ',
                 err.stack || err
             );
-            socket.broadcast.emit('receive_message', err);
         });
+});
+
+//// sockets to be implemented ////
+
+const io = socketio(server);
+
+io.on('connection', async (socket) => {
+    console.log('Connected!');
+    data = await getTeamIDsAndCrestUrls();
+    ids = data.ids;
+    crestUrls = data.crestUrls;
+
+    socket.on('send_query', async (query) => {
+
+        client
+            .message(query.message)
+            .then(res => handler.responseFromWit(res, ids, crestUrls))
+            .then(msg => {
+                socket.emit('receive_message', msg);
+            })
+            .catch(err => {
+                console.error(
+                    'Oops! Got an error from Wit: ',
+                    err.stack || err
+                );
+                socket.emit('receive_message', err);
+            });
     });
 });
 
