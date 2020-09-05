@@ -2,7 +2,7 @@ const app = require('express')();
 const server = require('http').createServer(app);
 const socketio = require('socket.io');
 const bodyParser = require('body-parser');
-const redis = require('redis');
+// const redis = require('redis');
 const handler = require('./utils/wit.handler');
 const client = require('./config/wit.config');
 const { getTeamIDs } = require('./utils/axios.handler');
@@ -11,23 +11,25 @@ require('dotenv').config();
 ///// Init /////
 
 app.use(bodyParser.urlencoded({ extended: true }));
-const redisClient = redis.createClient();
+// const redisClient = redis.createClient();
 var ids;
 
 ///// Checking Redis-Cache //////
 
-function cache(req, res, next) {
-    redisClient.get('ids', async(err, data) => {
-        if (err) throw err;
+async function cache(req, res, next) {
+    ids = await getTeamIDs();
+    next();
 
-        if (data != null) {
-            ids = JSON.parse(data);
-        } else {
-            ids = await getTeamIDs();
-            redisClient.setex('ids', 86400, JSON.stringify(ids));
-        }
-        next();
-    });
+    // redisClient.get('ids', async(err, data) => {
+    //     if (err) throw err;
+
+    //     if (data != null) {
+    //         ids = JSON.parse(data);
+    //     } else {
+    //         redisClient.setex('ids', 86400, JSON.stringify(ids));
+    //     }
+
+    // });
 }
 
 ///// routes /////
