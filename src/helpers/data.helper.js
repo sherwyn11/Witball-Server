@@ -15,13 +15,15 @@ function getTeamName(data, ids) {
 function getTeamID(data, ids) {
     var teamNames = Object.keys(ids);
     var teamArr = data.entities['team_name:team_name'];
-    var teamID;
+    var teamID = undefined;
 
-    teamArr.forEach((arr) => {
-        if(teamNames.includes(arr.value)) {
-            teamID = ids[arr.value];
-        }
-    });
+    if(teamArr !== undefined) {
+        teamArr.forEach((arr) => {
+            if(teamNames.includes(arr.value)) {
+                teamID = ids[arr.value];
+            }
+        });
+    }
 
     return teamID;
 }
