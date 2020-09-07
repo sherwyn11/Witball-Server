@@ -68,7 +68,7 @@ async function handleGetScore(data, ids, crestUrls) {
         score = await getTeamScore(teamName);
     }
 
-    return { object: score, intent: 'get_score', teamName: teamName, type: 'object' };
+    return { object: score, intent: 'get_score', teamName: teamName, type: 'object', crestUrl: crestUrls[teamName] };
 }
   
 async function handleGetPlayers(data, ids, crestUrls) {
