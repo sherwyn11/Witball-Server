@@ -4,11 +4,11 @@ Server for Witball app.
 
 ## App
 
-Check out the app <a href="https://github.com/Darlene-Naz/Witball">here</a>
+Check out the app <a href="https://github.com/Darlene-Naz/Witball">here</a>.
 
 ## Contributors
 
-Made with 💙 by <a href="https://github.com/Darlene-Naz">Darlene Nazareth</a> and <a href="https://github.com/sherwyn11">Sherwyn D'souza</a></b>
+Made with 💙 by <a href="https://github.com/Darlene-Naz">Darlene Nazareth</a> and <a href="https://github.com/sherwyn11">Sherwyn D'souza</a></b>.
 
 ## License
 
