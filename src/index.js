@@ -2,7 +2,6 @@ const app = require('express')();
 const server = require('http').createServer(app);
 const socketio = require('socket.io');
 const bodyParser = require('body-parser');
-// const redis = require('redis');
 const handler = require('./utils/wit.handler');
 const client = require('./config/wit.config');
 const { getTeamIDsAndCrestUrls } = require('./utils/axios.handler');
@@ -11,12 +10,11 @@ require('dotenv').config();
 ///// Init /////
 
 app.use(bodyParser.urlencoded({ extended: true }));
-// const redisClient = redis.createClient();
 var data = undefined;
 var ids = undefined;
 var crestUrls = undefined;
 
-///// Store team ID's on Server //////
+///// Store team ID's and crest URL's on Server //////
 
 async function cache(req, res, next) {
     if (data === undefined) {
@@ -27,30 +25,7 @@ async function cache(req, res, next) {
     next();
 }
 
-///// routes /////
-
-app.get('/', (req, res) => {
-    res.send('Test Works!');
-});
-
-app.post('/', cache, (req, res) => {
-    const query = req.body.query;
-
-    client
-        .message(query)
-        .then(res => handler.responseFromWit(res, ids, crestUrls))
-        .then(msg => {
-            res.send(msg);
-        })
-        .catch(err => {
-            console.error(
-                'Oops! Got an error from Wit: ',
-                err.stack || err
-            );
-        });
-});
-
-//// sockets to be implemented ////
+//// socket for client-server communication ////
 
 const io = socketio(server);
 
