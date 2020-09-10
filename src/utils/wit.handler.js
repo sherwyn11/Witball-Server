@@ -14,7 +14,7 @@ async function responseFromWit(data, ids, crestUrls) {
             case 'wit$thanks':
                 return { intent: 'thanks', 'message': 'Anytime!', type: 'string' };
             case 'wit$greetings':
-                return { intent: 'greetings', 'message': 'Hello there!', type: 'string' };
+                return { intent: 'greeting', 'message': 'Hello there!', type: 'string' };
             case 'wit$bye':
                 return { intent: 'bye', 'message': 'Bye-Bye!', type: 'string' };
         }
@@ -28,6 +28,10 @@ async function responseFromWit(data, ids, crestUrls) {
                 return handleGetFixtures(data, ids, crestUrls);
             case 'get_players':
                 return handleGetPlayers(data, ids, crestUrls);
+            case 'get_info':
+                return handleGetInfo();
+            case 'get_work':
+                return handleGetWork();
         }
 
         return handleGibberish();
@@ -85,6 +89,14 @@ async function handleGetPlayers(data, ids, crestUrls) {
 
 
     return { object: players, intent: 'get_players', teamName: teamName, type: 'object', crestUrl: crestUrls[teamName] };
+}
+
+function handleGetInfo() {
+    return { intent: 'info', 'message': "Hey there fellow Soccer-Geek! I am Witball! Your personal assistant. I have been created to bring you football info", type: 'string' };
+}
+
+function handleGetWork() {
+    return { intent: 'work', 'message': "You can ask me anything related to football! Ask me something like 'What is the current score of Manchester City?' or 'Fixtures of Arsenal?' or 'Players of Chelsea FC?", type: 'string' };
 }
 
 exports.responseFromWit = responseFromWit;  

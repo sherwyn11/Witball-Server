@@ -3,13 +3,18 @@ function getTeamName(data, ids) {
     var teamArr = data.entities['team_name:team_name'];
     var teamName;
 
-    teamArr.forEach((arr) => {
-        if(teamNames.includes(arr.value)) {
-            teamName = arr.value;
-        }
-    });
+    try{
+        teamArr.forEach((arr) => {
+            if(teamNames.includes(arr.value)) {
+                teamName = arr.value;
+            }
+        });
+        return teamName;
 
-    return teamName;
+    }catch(e) {
+        return undefined;
+    }
+
 }
 
 function getTeamID(data, ids) {
@@ -17,15 +22,19 @@ function getTeamID(data, ids) {
     var teamArr = data.entities['team_name:team_name'];
     var teamID = undefined;
 
-    if(teamArr !== undefined) {
-        teamArr.forEach((arr) => {
-            if(teamNames.includes(arr.value)) {
-                teamID = ids[arr.value];
-            }
-        });
-    }
+    try{
+        if(teamArr !== undefined) {
+            teamArr.forEach((arr) => {
+                if(teamNames.includes(arr.value)) {
+                    teamID = ids[arr.value];
+                }
+            });
+        }
+        return teamID;
 
-    return teamID;
+    } catch(e) {
+        return undefined;
+    }
 }
 
 function getTeamNameFromID(id, ids) {
