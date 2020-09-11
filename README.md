@@ -2,6 +2,8 @@
 
 Server for Witball app.
 
+![](https://i.ibb.co/rxwcJ9k/flow-diagram.png)
+
 ## App
 
 Check out the app <a href="https://github.com/Darlene-Naz/Witball">here</a>.
