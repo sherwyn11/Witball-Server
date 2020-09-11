@@ -1,5 +1,5 @@
 const { getTeamFixtures, getTeamScore, getTeamPlayers } = require('./axios.handler');
-const { getTeamName, getTeamID, getTeamNameFromID, getTrait } = require('../helpers/data.helper');
+const { getTeamName, getTeamID, getTeamNameFromID, getTrait, getRandomFact } = require('../helpers/data.helper');
 require('dotenv').config();
 
 async function responseFromWit(data, ids, crestUrls) {
@@ -32,6 +32,8 @@ async function responseFromWit(data, ids, crestUrls) {
                 return handleGetInfo();
             case 'get_work':
                 return handleGetWork();
+            case 'get_fact':
+                return handleGetFact();
         }
 
         return handleGibberish();
@@ -98,6 +100,12 @@ function handleGetInfo() {
 
 function handleGetWork() {
     return { intent: 'work', 'message': "You can ask me anything related to football! Ask me something like 'What is the current score of Manchester City?' or 'Fixtures of Arsenal?' or 'Players of Chelsea FC?", type: 'string' };
+}
+
+function handleGetFact() {
+    let fact = getRandomFact();
+    
+    return { intent: 'fact', 'message': fact, type: 'string' };
 }
 
 exports.responseFromWit = responseFromWit;  

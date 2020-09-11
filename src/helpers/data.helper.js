@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 function getTeamName(data, ids) {
     var teamNames = Object.keys(ids);
     var teamArr = data.entities['team_name:team_name'];
@@ -67,4 +69,12 @@ function getTrait(traits) {
     return fin[0];
 }
 
-module.exports = { getTeamName, getTeamID, getTeamNameFromID, getTrait };
+function getRandomFact() {
+    let rawdata = fs.readFileSync('./src/data/data.json');
+    let facts = JSON.parse(rawdata).facts;
+    let num = Math.floor(Math.random() * 100) % facts.length;
+
+    return facts[num].fact
+}
+
+module.exports = { getTeamName, getTeamID, getTeamNameFromID, getTrait, getRandomFact };

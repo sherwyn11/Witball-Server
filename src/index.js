@@ -25,6 +25,23 @@ async function cache(req, res, next) {
     next();
 }
 
+app.post('/', cache, (req, res) => {
+    const query = req.body.query;
+
+    client
+        .message(query)
+        .then(res => handler.responseFromWit(res, ids, crestUrls))
+        .then(msg => {
+            res.send(msg);
+        })
+        .catch(err => {
+            console.error(
+                'Oops! Got an error from Wit: ',
+                err.stack || err
+            );
+        });
+});
+
 //// socket for client-server communication ////
 
 const io = socketio(server);
