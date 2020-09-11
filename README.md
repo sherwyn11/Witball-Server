@@ -2,6 +2,8 @@
 
 Server for Witball app.
 
+## Flow Diagram
+
 ![](https://i.ibb.co/rxwcJ9k/flow-diagram.png)
 
 ## App
