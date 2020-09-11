@@ -70,9 +70,11 @@ async function handleGetScore(data, ids, crestUrls) {
         return { type: 'string', message: 'Sorry! I couldn\'t resolve the team name', intent: 'error' }; 
     } else{
         score = await getTeamScore(teamName);
+        if(Object.keys(score).length === 0) {
+            return { message: `No matches of ${teamName} going on currently! Check back later!`, intent: 'get_score', teamName: teamName, type: 'string', crestUrl: crestUrls[teamName] }; 
+        }
+        return { object: score, intent: 'get_score', teamName: teamName, type: 'object', crestUrl: crestUrls[teamName] };
     }
-
-    return { object: score, intent: 'get_score', teamName: teamName, type: 'object', crestUrl: crestUrls[teamName] };
 }
   
 async function handleGetPlayers(data, ids, crestUrls) {
@@ -86,7 +88,6 @@ async function handleGetPlayers(data, ids, crestUrls) {
         var teamName = getTeamNameFromID(teamID, ids);
         players = await getTeamPlayers(teamID);
     }
-
 
     return { object: players, intent: 'get_players', teamName: teamName, type: 'object', crestUrl: crestUrls[teamName] };
 }
